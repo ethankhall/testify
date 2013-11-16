@@ -13,3 +13,7 @@ dependencies {
     testCompile 'org.testng:testng:6.8.7'
     testCompile 'org.easytesting:fest-assert:1.4'
 }
+
+task(type: Wrapper) {
+    gradleVersion = '1.8'
+}

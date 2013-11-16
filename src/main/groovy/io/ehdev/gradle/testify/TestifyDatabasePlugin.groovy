@@ -14,7 +14,7 @@ class TestifyDatabasePlugin implements Plugin<Project> {
         project.extensions.create("testify", TestifyPluginExtension)
 
         StartTestifyTask task = project.tasks.create('startTestify', StartTestifyTask)
-        task.description = "Start an H2 database locally for the life of gradle"
+        task.description = "Start an H2 database locally for the life of the gradle instance"
         task.group = "testify"
 
         setTestsWithDBInfo(project)

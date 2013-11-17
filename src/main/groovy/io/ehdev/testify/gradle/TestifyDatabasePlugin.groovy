@@ -1,4 +1,4 @@
-package io.ehdev.gradle.testify
+package io.ehdev.testify.gradle
 
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin

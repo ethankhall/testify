@@ -1,5 +1,7 @@
-package io.ehdev.gradle.testify
+package io.ehdev.testify.gradle.testify
 import groovy.sql.Sql
+import io.ehdev.testify.gradle.StartTestifyTask
+import io.ehdev.testify.gradle.TestifyDatabasePlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.testng.annotations.Test

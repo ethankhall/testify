@@ -4,5 +4,5 @@ class TestifyPluginExtension {
 
     String databaseName
     def scripts = []
-    def filterTestTasks = []
+    def excludeTestTasks = []
 }

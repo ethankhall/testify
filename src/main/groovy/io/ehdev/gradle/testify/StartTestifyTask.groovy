@@ -1,9 +1,8 @@
 package io.ehdev.gradle.testify
 import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.testing.Test
 import org.h2.Driver
 import org.h2.tools.Server
 
@@ -12,26 +11,13 @@ import java.sql.Connection
 @Slf4j
 class StartTestifyTask extends DefaultTask{
 
-    StartTestifyTask(){
-        outputs.upToDateWhen { false }
-    }
-
-    @Input
-    def databaseName
-
-    @Input
-    def filterTestTasks = []
-
-    @InputFiles
-    def scripts = []
-
     @TaskAction
     void start() {
         log.debug("Starting task")
 
-        databaseName = project.testify.databaseName;
-        scripts = project.testify.scripts;
-        filterTestTasks = project.testify.filterTestTasks;
+        def databaseName = project.testify.databaseName;
+        def scripts = project.testify.scripts;
+        def filterTestTasks = project.testify.excludeTestTasks;
 
         // open the in-memory database within a VM
         Connection conn = new Driver().connect("jdbc:h2:mem:$databaseName;MODE=MySQL", null)
@@ -42,5 +28,12 @@ class StartTestifyTask extends DefaultTask{
 
         Server.createTcpServer().start();
         log.debug("Server now up an running, please use jdbc:h2:localhost:mem:$databaseName")
+
+        project.tasks.withType(Test).each { task ->
+            if(filterTestTasks.isEmpty() || filterTestTasks.contains(task.name) ) {
+                task.allJvmArgs += "-D__testifyDBName=$databaseName"
+                log.debug("Adding parameter to the JVM: -D__testifyDBName=$databaseName")
+            }
+        }
     }
 }

@@ -13,20 +13,22 @@ class TestifyDatabasePlugin implements Plugin<Project> {
 
         project.extensions.create("testify", TestifyPluginExtension)
 
-        StartTestifyTask task = project.tasks.create('startTestify', StartTestifyTask)
-        task.description = "Start an H2 database locally for the life of the gradle instance"
-        task.group = "testify"
+        project.task(type: StartTestifyTask, 'startTestify') {
+            description = "Start an H2 database locally for the life of the gradle instance"
+            group = "testify"
+        }
 
-        setTestsWithDBInfo(project)
+//        setTestsWithDBInfo(project)
     }
 
     void setTestsWithDBInfo(final Project project) {
-        project.tasks.withType(Test).whenTaskAdded { Test task ->
+
+        project.tasks.withType(Test).e.whenTaskAdded { Test task ->
             log.debug("Task Added")
-            log.debug(project.testify.databaseName)
+            log.debug(task.project.getExtensions().getByName("testify").databaseName)
             project.gradle.taskGraph.whenReady {
                 log.debug("Graph Ready")
-                if(project.testify.filterTestTasks.isEmpty() || project.testify.contains(task.name) ) {
+                if(project.testify.excludeTestTasks.isEmpty() || project.testify.excludeTestTasks.contains(task.name) ) {
                     task.allJvmArgs += "-D__testifyDBName=$project.testify.databaseName"
                     log.debug("Adding parameter to the JVM: -D__testifyDBName=$project.testify.databaseName")
                 }

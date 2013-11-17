@@ -10,10 +10,8 @@ class TestifyDatabasePluginTest {
 
     @Test
     public void testAddingTaskToProject() throws Exception {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: TestifyDatabasePlugin
-        project.apply plugin: "java"
-        project.testify.databaseName = "test"
+        Project project = createBaseProject("test")
+
         project.testify.scripts = [ 'src/test/resources/001_first_script.sql', 'src/test/resources/002_second_script.sql' ]
 
         assertThat(project.tasks.startTestify).isInstanceOf(StartTestifyTask.class)
@@ -28,15 +26,29 @@ class TestifyDatabasePluginTest {
 
     @Test
     public void testAddingJVMOptions() throws Exception {
-        Project project = ProjectBuilder.builder().build()
-        project.apply plugin: TestifyDatabasePlugin
-        project.apply plugin: "java"
-        project.testify.databaseName = "test1"
+        Project project = createBaseProject("test1")
 
-        project.evaluate()
+        project.tasks.startTestify.start()
 
         def testTask = project.getTasks().getByName("test")
         assertThat(testTask).isInstanceOf(org.gradle.api.tasks.testing.Test)
         assertThat(((org.gradle.api.tasks.testing.Test)testTask).allJvmArgs).contains("-D__testifyDBName=test1")
+    }
+
+    @Test
+    public void testSkippingTasksToAddJVMArg() throws Exception {
+        Project project = createBaseProject("test2")
+        project.testify.excludeTestTasks = 'test'
+
+        def testTask = project.getTasks().getByName("test")
+        assertThat(((org.gradle.api.tasks.testing.Test)testTask).getAllJvmArgs()).hasSize(2)
+    }
+
+    private Project createBaseProject(String databaseName) {
+        Project project = ProjectBuilder.builder().build()
+        project.apply plugin: TestifyDatabasePlugin
+        project.apply plugin: "java"
+        project.testify.databaseName = databaseName
+        project
     }
 }

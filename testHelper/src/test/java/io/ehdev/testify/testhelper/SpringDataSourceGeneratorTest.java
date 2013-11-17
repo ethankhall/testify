@@ -12,7 +12,6 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public class SpringDataSourceGeneratorTest {
 
     @BeforeTest
     public void setup() throws Exception {
-        Connection conn = new Driver().connect("jdbc:h2:mem:TESTDATABASE1;MODE=MySQL", null);
+        new Driver().connect("jdbc:h2:mem:TESTDATABASE1;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", null);
         System.setProperty("__testifyDBName", "TESTDATABASE1");
         server = Server.createTcpServer().start();
     }

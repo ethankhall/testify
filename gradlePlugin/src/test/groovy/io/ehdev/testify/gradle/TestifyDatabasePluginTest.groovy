@@ -3,6 +3,7 @@ import groovy.sql.Sql
 import groovy.util.logging.Log4j
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.h2.jdbc.JdbcSQLException
 import org.testng.annotations.Test
 
 import static org.fest.assertions.Assertions.assertThat
@@ -22,10 +23,16 @@ class TestifyDatabasePluginTest {
 
         project.tasks.startTestify.start()
 
-        def db = [url:'jdbc:h2:tcp://localhost/mem:test',  driver:'org.h2.Driver']
+        def db = [url:'jdbc:h2:tcp://localhost/mem:test;IFEXISTS=TRUE',  driver:'org.h2.Driver']
         def sql = Sql.newInstance(db.url, db.driver)
         assertThat(sql.firstRow("SELECT count(*) as numberOfRows FROM some_table").numberOfRows).isEqualTo(2)
         assertThat(sql.firstRow("SELECT count(*) as numberOfRows FROM second_table").numberOfRows).isEqualTo(2)
+    }
+
+    @Test(expectedExceptions = JdbcSQLException.class)
+    public void testConnectionWillFailIfNotStarted() throws Exception {
+        def db = [url:'jdbc:h2:tcp://localhost/mem:DATABASE_NOT_YET_CREATED;IFEXISTS=TRUE',  driver:'org.h2.Driver']
+        def sql = Sql.newInstance(db.url, db.driver)
     }
 
     @Test

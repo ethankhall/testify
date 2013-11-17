@@ -4,6 +4,6 @@
 <beans>
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" >
         <property name="driverClassName" value="org.h2.Driver"/>
-        <property name="url" value="jdbc:h2:tcp://localhost/mem:#{systemProperties.__testifyDBName};MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE" />
+        <property name="url" value="jdbc:h2:tcp://localhost/mem:#{systemProperties.__testifyDBName};MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;IFEXISTS=TRUE" />
     </bean>
 </beans>

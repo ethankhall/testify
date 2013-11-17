@@ -1,5 +1,6 @@
 package io.ehdev.testify.gradle.testify
 import groovy.sql.Sql
+import groovy.util.logging.Log4j
 import io.ehdev.testify.gradle.StartTestifyTask
 import io.ehdev.testify.gradle.TestifyDatabasePlugin
 import org.gradle.api.Project
@@ -8,13 +9,15 @@ import org.testng.annotations.Test
 
 import static org.fest.assertions.Assertions.assertThat
 
+@Log4j
 class TestifyDatabasePluginTest {
 
     @Test
     public void testAddingTaskToProject() throws Exception {
         Project project = createBaseProject("test")
+        def basePath =  getClass().getResource("/").toURI().getPath()
 
-        project.testify.scripts = [ 'src/test/resources/001_first_script.sql', 'src/test/resources/002_second_script.sql' ]
+        project.testify.scripts = [ "$basePath/001_first_script.sql", "$basePath/002_second_script.sql" ]
 
         assertThat(project.tasks.startTestify).isInstanceOf(StartTestifyTask.class)
 

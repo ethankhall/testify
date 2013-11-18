@@ -20,20 +20,6 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class SpringDataSourceGeneratorTest {
 
-    private Server server;
-
-    @BeforeTest
-    public void setup() throws Exception {
-        new Driver().connect("jdbc:h2:mem:TESTDATABASE1;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", null);
-        System.setProperty("__testifyDBName", "TESTDATABASE1");
-        server = Server.createTcpServer().start();
-    }
-
-    @AfterTest
-    public void afterTests() throws Exception {
-        server.shutdown();
-    }
-
     @Test
     public void testUsingXML() throws Exception {
         ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(new String[] {"test-datasource.xml"});

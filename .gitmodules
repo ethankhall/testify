@@ -1,0 +1,3 @@
+[submodule "mvn-repo"]
+	path = mvn-repo
+	url = git@github.com:ethankhall/mvn-repo.git

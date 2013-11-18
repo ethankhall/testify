@@ -1,0 +1,19 @@
+
+apply plugin: 'java'
+
+repositories {
+    maven {
+        url uri("https://raw.github.com/ethankhall/mvn-repo/master")
+    }
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'io.ehdev.testify:testify-java:1.0.0'
+
+    testCompile 'org.testng:testng:6.8.7'
+    testCompile 'org.easytesting:fest-assert:1.4'
+    testCompile 'org.springframework:spring-jdbc:3.2.4.RELEASE'
+    testCompile 'org.springframework:spring-web:3.2.4.RELEASE'
+    testCompile 'javax.servlet:servlet-api:2.5'
+}

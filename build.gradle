@@ -1,0 +1,21 @@
+subprojects {
+    apply plugin: 'maven-publish'
+
+   publishing {
+        publications {
+            
+            gradlePlugin(MavenPublication) {
+                groupId 'io.ehdev.testify'
+                version '1.0.0'
+
+                from components.java
+            }
+        }
+        repositories {
+            maven {
+                url "$rootDir/mvn-repo"
+            }
+        }
+    }
+     
+}

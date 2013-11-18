@@ -1,2 +1,2 @@
-include ':gradlePlugin'
-include ':testHelper'
+include ':testify-gradle'
+include ':testify-java'

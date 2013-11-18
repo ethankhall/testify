@@ -15,7 +15,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.ehdev.testify:testify-gradle:1.0.1'
+        classpath 'io.ehdev.testify:testify-gradle:1.0.2'
     }
 }
 
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    testCompile 'io.ehdev.testify:testify-java:1.0.1'
+    testCompile 'io.ehdev.testify:testify-java:1.0.2'
 }
 ```
 

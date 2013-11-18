@@ -19,6 +19,8 @@ class StartTestifyTask extends DefaultTask{
         def scripts = project.testify.scripts;
         def filterTestTasks = project.testify.excludeTestTasks;
 
+        databaseName = databaseName ?: Long.toString(System.currentTimeMillis())
+
         // open the in-memory database within a VM
         Connection conn = new Driver().connect("jdbc:h2:mem:$databaseName;MODE=MySQL", null)
 

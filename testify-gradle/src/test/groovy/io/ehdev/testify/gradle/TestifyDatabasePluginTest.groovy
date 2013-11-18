@@ -55,7 +55,19 @@ class TestifyDatabasePluginTest {
         assertThat(((org.gradle.api.tasks.testing.Test)testTask).getAllJvmArgs()).hasSize(2)
     }
 
-    private Project createBaseProject(String databaseName) {
+    @Test
+    public void testAutomaticDatabaseName() throws Exception {
+        Project project = createBaseProject(null)
+        project.tasks.startTestify.start()
+
+        def testTask = project.getTasks().getByName("test")
+        assertThat(testTask).isInstanceOf(org.gradle.api.tasks.testing.Test)
+
+        String args = ((org.gradle.api.tasks.testing.Test)testTask).allJvmArgs.find { it =~ /-D__test.*/ }
+        assertThat(Long.parseLong(args.split("=")[1])).isNotNull()
+    }
+
+    private static Project createBaseProject(String databaseName) {
         Project project = ProjectBuilder.builder().build()
         project.apply plugin: TestifyDatabasePlugin
         project.apply plugin: "java"

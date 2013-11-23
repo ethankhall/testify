@@ -1,4 +1,4 @@
-package io.ehdev.dbtestbuilder
+package io.ehdev.testify.dbtestbuilder
 
 import org.apache.commons.dbcp.BasicDataSource
 import org.mockito.Mock
@@ -19,8 +19,6 @@ import static org.mockito.MockitoAnnotations.initMocks
 class DBTestBuilderTest {
 
     def builder
-    @Mock
-    JdbcTemplate template
 
     @Mock
     DataSource dataSource
@@ -40,7 +38,6 @@ class DBTestBuilderTest {
     }
 
     private void setUpMockReturns() {
-        when(template.getDataSource()).thenReturn(dataSource)
         when(dataSource.getConnection()).thenReturn(connection)
         when(connection.prepareStatement(anyString(), anyInt())).thenReturn(statement)
         when(statement.getGeneratedKeys()).thenAnswer(new Answer<Object>() {
@@ -64,7 +61,7 @@ class DBTestBuilderTest {
 
     @Test
     public void testReadingFromJsonScript() throws Exception {
-        createDBTestBuilder("db_example1.db", template)
+        createDBTestBuilder("db_example1.db", dataSource)
         verify(statement).setObject(4,1)
         verify(statement).setObject(4,2)
         verify(statement).setObject(4,3)
@@ -87,8 +84,13 @@ class DBTestBuilderTest {
         template
     }
 
-    def createDBTestBuilder(String fileName, JdbcTemplate template) {
+    def createDBTestBuilder(String fileName, DataSource dataSource) {
         def resource = getClass().getResource("/$fileName")
-        builder = new DBTestBuilder(resource.getFile(), template)
+        builder = new DBTestBuilder(resource.getFile(), dataSource)
+    }
+
+    def createDBTestBuilder(String fileName, JdbcTemplate jdbcTemplate) {
+        def resource = getClass().getResource("/$fileName")
+        builder = new DBTestBuilder(resource.getFile(), jdbcTemplate)
     }
 }

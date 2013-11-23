@@ -1,13 +1,19 @@
-package io.ehdev.dbtestbuilder
+package io.ehdev.testify.dbtestbuilder
 
 import groovy.sql.Sql
 import org.springframework.jdbc.core.JdbcTemplate
+
+import javax.sql.DataSource
 
 class DBTestBuilder {
     def testScript
 
     DBTestBuilder(String fileName, JdbcTemplate jdbcTemplate) {
-        DBTestCase.setConnection(new Sql(jdbcTemplate.getDataSource()))
+        this(fileName, jdbcTemplate.getDataSource())
+    }
+
+    DBTestBuilder(String fileName, DataSource dataSource) {
+        DBTestCase.setConnection(new Sql(dataSource))
         testScript = new GroovyShell().parse(new File(fileName))
         testScript.run()
     }

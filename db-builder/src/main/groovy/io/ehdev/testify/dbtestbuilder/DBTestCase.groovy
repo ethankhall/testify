@@ -1,4 +1,4 @@
-package io.ehdev.dbtestbuilder
+package io.ehdev.testify.dbtestbuilder
 
 import groovy.sql.Sql
 

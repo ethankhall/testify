@@ -1,2 +1,3 @@
 include ':testify-gradle'
 include ':testify-java'
+include ':db-builder'

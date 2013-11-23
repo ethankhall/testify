@@ -1,0 +1,15 @@
+import io.ehdev.dbtestbuilder.DBTestCase
+
+def test1 = DBTestCase.make {
+    def table1Ids = [
+            table1( field1: 1, field2: 2, field3: 3),
+            table1( field1: 4, field2: 5, field3: 6),
+            table1( field1: 7, field2: 8, field3: 9)
+            ]
+
+    def table2Ids = [
+            table2( field1: 1, field2: 2, field3: 3, refId: table1Ids[0]),
+            table2( field1: 4, field2: 5, field3: 6, refId: table1Ids[1]),
+            table2( field1: 7, field2: 8, field3: 9, refId: table1Ids[2])
+    ]
+}

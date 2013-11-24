@@ -1,21 +1,35 @@
+
 subprojects {
     apply plugin: 'maven-publish'
+    apply plugin: 'java'
+    apply plugin: 'signing'
 
-   publishing {
-        publications {
-            
-            gradlePlugin(MavenPublication) {
-                groupId 'io.ehdev.testify'
-                version '1.0.2'
+    task sourceJar (type : Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
 
-                from components.java
-            }
-        }
-        repositories {
-            maven {
-                url "$rootDir/mvn-repo"
-            }
+    task javadocJar (type: Jar, dependsOn: javadoc) { 
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    ext.pomFilePath = "${project.projectDir}/tmp/pom.xml"
+    ext.pomFile = file(pomFilePath)
+
+    configurations {
+        pom
+    }
+
+    artifacts {
+        archives jar
+        archives sourceJar
+        archives javadocJar
+        if (pomFile.exists()) {
+            pom pomFile
         }
     }
-     
+
+
+    apply from: "$rootDir/publishing.gradle"
 }

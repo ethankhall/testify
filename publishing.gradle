@@ -1,0 +1,88 @@
+task signJars (type : Sign, dependsOn: [jar, javadocJar, sourceJar]) {
+    sign configurations.archives
+}
+
+task preparePublish(dependsOn: signJars)
+def getSignatureFiles = {
+    def allFiles = project.tasks.signJars.signatureFiles.collect { it }
+    def signedSources = allFiles.find { it.name.contains('-sources') }
+    def signedJavadoc = allFiles.find { it.name.contains('-javadoc') }
+    def signedJar = (allFiles - [signedSources, signedJavadoc])[0]
+    return [
+            [archive: signedSources, classifier: 'sources', extension: 'jar.asc'],
+            [archive: signedJavadoc, classifier: 'javadoc', extension: 'jar.asc'],
+            [archive: signedJar,     classifier: null,      extension: 'jar.asc']
+    ]
+}
+
+publishing {
+    publications {
+       gpgJars(MavenPublication) {
+            groupId 'io.ehdev'
+            version '1.0.3'
+            getSignatureFiles().each {signature ->
+                artifact (signature.archive) {
+                    classifier = signature.classifier
+                    extension  = signature.extension
+                }
+            }
+        }
+        if (project.ext.pomFile.exists()) {
+            gpgPom(MavenPublication) {
+                groupId 'io.ehdev'
+                version '1.0.3'
+                artifact (getPomSignature()) {
+                    classifier = null
+                    extension  = 'pom.asc'
+                }
+            }
+        }    
+        testify(MavenPublication) {
+            groupId 'io.ehdev'
+            version '1.0.3'
+            from components.java
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name 'testify'
+                    description 'a project to aid in development requireing databases'
+                    url 'https://github.com/ethankhall/testify'
+                    scm {
+                        url 'https://github.com/ethankhall/testify'
+                        connection 'scm:git:git://github.com/ethankhall/testify.git'
+                        developerConnection 'scm:git:ssh:git@github.com:ethankhall/testify'
+                    }
+                    licenses {
+                        license {
+                            name 'The MIT License (MIT)'
+                            url 'https://github.com/ethankhall/testify/blob/master/LICENSE'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'ethankhall'
+                            name 'Ethan Hall'
+                            email 'maven@ehdev.io'
+                        }
+                    }
+                }
+            }
+
+
+            artifact (javadocJar) {
+                classifier = 'javadoc'
+            }
+
+            artifact (sourceJar) { 
+                classifier = 'sources'
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "$rootDir/mvn-repo"
+        }
+    }
+}
+

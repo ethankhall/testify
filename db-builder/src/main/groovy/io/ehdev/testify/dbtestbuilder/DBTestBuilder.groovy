@@ -13,8 +13,11 @@ class DBTestBuilder {
     }
 
     DBTestBuilder(String fileName, DataSource dataSource) {
-        DBTestCase.setConnection(new Sql(dataSource))
+        def builder = new DBTestCase(new Sql(dataSource))
         testScript = new GroovyShell().parse(new File(fileName))
+        testScript.metaClass.DBTestCase {
+            builder.make(it)
+        }
         testScript.run()
     }
 }

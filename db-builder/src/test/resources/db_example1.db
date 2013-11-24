@@ -1,6 +1,4 @@
-import io.ehdev.testify.dbtestbuilder.DBTestCase
-
-def test1 = DBTestCase.make {
+DBTestCase {
     def table1Ids = [
             table1( field1: 1, field2: 2, field3: 3),
             table1( field1: 4, field2: 5, field3: 6),

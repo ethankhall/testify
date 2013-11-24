@@ -4,11 +4,14 @@ import groovy.sql.Sql
 
 class DBTestCase {
 
-    static Sql connection;
+    final Sql connection;
 
-    def static make(closure) {
-        def testCaseDSL = new DBTestCase()
-        closure.delegate = testCaseDSL
+    DBTestCase(Sql connection){
+        this.connection = connection
+    }
+
+    def make(closure) {
+        closure.delegate = this
         closure()
     }
 

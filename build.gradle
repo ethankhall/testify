@@ -14,8 +14,10 @@ subprojects {
         from javadoc.destinationDir
     }
 
-    ext.pomFilePath = "${project.projectDir}/tmp/pom.xml"
-    ext.pomFile = file(pomFilePath)
+    ext {
+        pomFilePath = "${project.projectDir}/tmp/pom.xml"
+        pomFile = file(pomFilePath)
+    }
 
     configurations {
         pom

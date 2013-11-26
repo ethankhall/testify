@@ -2,7 +2,12 @@ task signJars (type : Sign, dependsOn: [jar, javadocJar, sourceJar]) {
     sign configurations.archives
 }
 
-task preparePublish(dependsOn: signJars)
+task signPom(type: Sign) {
+    sign configurations.pom
+}
+
+task preparePublication (dependsOn : [signJars, signPom])
+
 def getSignatureFiles = {
     def allFiles = project.tasks.signJars.signatureFiles.collect { it }
     def signedSources = allFiles.find { it.name.contains('-sources') }
@@ -15,10 +20,14 @@ def getSignatureFiles = {
     ]
 }
 
+def getPomSignature = {
+    return project.tasks.signPom.signatureFiles.collect{it}[0]
+}
+
 publishing {
     publications {
        gpgJars(MavenPublication) {
-            groupId 'io.ehdev'
+            groupId 'io.ehdev.testify' 
             version '1.0.3'
             getSignatureFiles().each {signature ->
                 artifact (signature.archive) {
@@ -27,18 +36,16 @@ publishing {
                 }
             }
         }
-        if (project.ext.pomFile.exists()) {
-            gpgPom(MavenPublication) {
-                groupId 'io.ehdev'
-                version '1.0.3'
-                artifact (getPomSignature()) {
-                    classifier = null
-                    extension  = 'pom.asc'
-                }
+        gpgPom(MavenPublication) {
+            groupId 'io.ehdev.testify' 
+            version '1.0.3'
+            artifact (getPomSignature()) {
+                classifier = null
+                extension  = 'pom.asc'
             }
-        }    
+        }
         testify(MavenPublication) {
-            groupId 'io.ehdev'
+            groupId 'io.ehdev.testify' 
             version '1.0.3'
             from components.java
             pom.withXml {
@@ -48,9 +55,9 @@ publishing {
                     description 'a project to aid in development requireing databases'
                     url 'https://github.com/ethankhall/testify'
                     scm {
-                        url 'https://github.com/ethankhall/testify'
-                        connection 'scm:git:git://github.com/ethankhall/testify.git'
-                        developerConnection 'scm:git:ssh:git@github.com:ethankhall/testify'
+                        url 'git@github.com/ethankhall/testify.git'
+                        connection 'scm:git:git@github.com/ethankhall/testify.git'
+                        developerConnection 'scm:gitgit@github.com:ethankhall/testify.git'
                     }
                     licenses {
                         license {
@@ -80,6 +87,15 @@ publishing {
         }
     }
     repositories {
+        /*
+        maven {
+            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username = mavenUsername
+                password = mavenPassword
+            }
+        }
+        */
         maven {
             url "$rootDir/mvn-repo"
         }

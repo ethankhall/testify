@@ -1,104 +1,59 @@
-task signJars (type : Sign, dependsOn: [jar, javadocJar, sourceJar]) {
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+version = '1.0.3'
+group = 'io.ehdev.testify'
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
 }
 
-task signPom(type: Sign) {
-    sign configurations.pom
+def sonatypeRepositoryUrl 
+if (ext.isReleaseVersion) {
+    println 'RELEASE BUILD'
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+} else {
+    println 'DEBUG BUILD'
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 }
 
-task preparePublication (dependsOn : [signJars, signPom])
-
-def getSignatureFiles = {
-    def allFiles = project.tasks.signJars.signatureFiles.collect { it }
-    def signedSources = allFiles.find { it.name.contains('-sources') }
-    def signedJavadoc = allFiles.find { it.name.contains('-javadoc') }
-    def signedJar = (allFiles - [signedSources, signedJavadoc])[0]
-    return [
-            [archive: signedSources, classifier: 'sources', extension: 'jar.asc'],
-            [archive: signedJavadoc, classifier: 'javadoc', extension: 'jar.asc'],
-            [archive: signedJar,     classifier: null,      extension: 'jar.asc']
-    ]
-}
-
-def getPomSignature = {
-    return project.tasks.signPom.signatureFiles.collect{it}[0]
-}
-
-publishing {
-    publications {
-       gpgJars(MavenPublication) {
-            groupId 'io.ehdev.testify' 
-            version '1.0.3'
-            getSignatureFiles().each {signature ->
-                artifact (signature.archive) {
-                    classifier = signature.classifier
-                    extension  = signature.extension
-                }
-            }
-        }
-        gpgPom(MavenPublication) {
-            groupId 'io.ehdev.testify' 
-            version '1.0.3'
-            artifact (getPomSignature()) {
-                classifier = null
-                extension  = 'pom.asc'
-            }
-        }
-        testify(MavenPublication) {
-            groupId 'io.ehdev.testify' 
-            version '1.0.3'
-            from components.java
-            pom.withXml {
-                asNode().children().last() + {
-                    resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'testify'
-                    description 'a project to aid in development requireing databases'
-                    url 'https://github.com/ethankhall/testify'
-                    scm {
-                        url 'git@github.com/ethankhall/testify.git'
-                        connection 'scm:git:git@github.com/ethankhall/testify.git'
-                        developerConnection 'scm:gitgit@github.com:ethankhall/testify.git'
-                    }
-                    licenses {
-                        license {
-                            name 'The MIT License (MIT)'
-                            url 'https://github.com/ethankhall/testify/blob/master/LICENSE'
-                            distribution 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id 'ethankhall'
-                            name 'Ethan Hall'
-                            email 'maven@ehdev.io'
-                        }
-                    }
-                }
-            }
-
-
-            artifact (javadocJar) {
-                classifier = 'javadoc'
-            }
-
-            artifact (sourceJar) { 
-                classifier = 'sources'
-            }
-        }
-    }
+afterEvaluate { project ->
+uploadArchives {
     repositories {
-        /*
-        maven {
-            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-            credentials {
-                username = mavenUsername
-                password = mavenPassword
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            repository(url: sonatypeRepositoryUrl) {
+                authentication(userName: mavenUsername, password: mavenPassword)
             }
-        }
-        */
-        maven {
-            url "$rootDir/mvn-repo"
+            //repository(url: "file://$rootDir/mvn-repo") 
+
+            pom.project {
+                name 'testify'
+                description 'a project to aid in development requireing databases'
+                url 'https://github.com/ethankhall/testify'
+                scm {
+                    url 'git@github.com/ethankhall/testify.git'
+                    connection 'scm:git:git@github.com/ethankhall/testify.git'
+                    developerConnection 'scm:gitgit@github.com:ethankhall/testify.git'
+                }
+                licenses {
+                    license {
+                        name 'The MIT License (MIT)'
+                        url 'https://github.com/ethankhall/testify/blob/master/LICENSE'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'ethankhall'
+                        name 'Ethan Hall'
+                        email 'maven@ehdev.io'
+                    }
+                }
+            }
         }
     }
 }
-
+}

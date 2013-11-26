@@ -1,6 +1,6 @@
 
 subprojects {
-    apply plugin: 'maven-publish'
+    apply plugin: 'maven'
     apply plugin: 'java'
     apply plugin: 'signing'
 
@@ -14,24 +14,11 @@ subprojects {
         from javadoc.destinationDir
     }
 
-    ext {
-        pomFilePath = "${project.projectDir}/tmp/pom.xml"
-        pomFile = file(pomFilePath)
-    }
-
-    configurations {
-        pom
-    }
-
     artifacts {
         archives jar
         archives sourceJar
         archives javadocJar
-        if (pomFile.exists()) {
-            pom pomFile
-        }
     }
-
 
     apply from: "$rootDir/publishing.gradle"
 }

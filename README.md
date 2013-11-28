@@ -1,6 +1,8 @@
 testify
 =======
 
+[![Build Status](https://travis-ci.org/ethankhall/testify.png?branch=master)](https://travis-ci.org/ethankhall/testify)
+
 A easy way to dynamically create databases for testing
 
 To use Testify you need to do two things. First add it to the classpath (to get the plugin).

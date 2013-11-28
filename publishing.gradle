@@ -12,10 +12,8 @@ signing {
 
 def sonatypeRepositoryUrl 
 if (ext.isReleaseVersion) {
-    println 'RELEASE BUILD'
     sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 } else {
-    println 'DEBUG BUILD'
     sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 }
 

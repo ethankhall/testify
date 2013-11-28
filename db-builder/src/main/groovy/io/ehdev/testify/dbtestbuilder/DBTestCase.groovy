@@ -5,24 +5,49 @@ import groovy.sql.Sql
 class DBTestCase {
 
     final Sql connection;
+    def tableToIdMap = [:]
 
     DBTestCase(Sql connection){
         this.connection = connection
     }
 
-    def make(closure) {
+    def make(name, closure) {
         closure.delegate = this
         closure()
     }
 
-    def methodMissing(String name, args){
-        def fields = getFieldMap(args)
-        String insertStatement = createInsertString(fields, name)
-        println(insertStatement)
+    def make(closure) {
+        make("", closure)
+    }
 
-        def rowResult = connection.executeInsert(fields, insertStatement)[0][0]
-        println(fields)
+    def methodMissing(String name, args){
+        Integer rowResult = insertIntoDatabase(args, name)
+        setIdForTable(name, rowResult)
+        return rowResult
+    }
+
+    public Object insertIntoDatabase(args, String name) {
+        Map fields = getFieldMap(args)
+        String insertStatement = createInsertString(fields, name)
+        def rowResult = executeTransactionToDatabase(fields, insertStatement)
         rowResult
+    }
+
+    public Object executeTransactionToDatabase(Map fields, String insertStatement) {
+        try {
+            return connection.executeInsert(fields, insertStatement)[0][0]
+        } catch (ex) {
+            throw new InvalidDatabaseOperationException(ex)
+        }
+    }
+
+    void setIdForTable(String name, def ids) {
+        def idsForName = tableToIdMap[name]
+        if(null == idsForName) {
+            idsForName = new HashSet<Integer>();
+        }
+        idsForName << ids
+        tableToIdMap[name] = idsForName
     }
 
     private GString createInsertString(fields, String name) {

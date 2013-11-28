@@ -6,18 +6,28 @@ import org.springframework.jdbc.core.JdbcTemplate
 import javax.sql.DataSource
 
 class DBTestBuilder {
-    def testScript
+    DataSource dataSource
 
-    DBTestBuilder(String fileName, JdbcTemplate jdbcTemplate) {
-        this(fileName, jdbcTemplate.getDataSource())
+    DBTestBuilder(JdbcTemplate jdbcTemplate) {
+        this(jdbcTemplate.getDataSource())
     }
 
-    DBTestBuilder(String fileName, DataSource dataSource) {
+    DBTestBuilder(DataSource dataSource) {
+        this.dataSource = dataSource
+    }
+
+    public Map<String, List<Integer>> processTestDatabase(String fileName) {
         def builder = new DBTestCase(new Sql(dataSource))
-        testScript = new GroovyShell().parse(new File(fileName))
+        setupScriptToRun(fileName, builder)
+        return builder.getTableToIdMap()
+    }
+
+    public Script setupScriptToRun(String fileName, builder) {
+        def testScript = new GroovyShell().parse(new File(fileName))
         testScript.metaClass.DBTestCase {
             builder.make(it)
         }
         testScript.run()
+        testScript
     }
 }

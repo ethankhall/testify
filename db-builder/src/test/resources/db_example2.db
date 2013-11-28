@@ -1,0 +1,10 @@
+DBTestCase {
+    def table1Ids = [
+            table1( field1: 1, field2: 2, field3: 3),
+            table1( field1: 4, field2: 5, field3: 6)
+            ]
+
+    table2( field1: 1, field2: 2, field3: 3, refId: table1Ids[0])
+    table2( field1: 4, field2: 5, field3: 6, refId: table1Ids[1])
+    this_table_doesnt_exist( some_filed: null )
+}

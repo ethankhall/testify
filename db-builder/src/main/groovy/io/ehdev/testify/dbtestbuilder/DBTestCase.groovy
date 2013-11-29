@@ -1,7 +1,9 @@
 package io.ehdev.testify.dbtestbuilder
 
 import groovy.sql.Sql
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class DBTestCase {
 
     final Sql connection;
@@ -12,6 +14,9 @@ class DBTestCase {
     }
 
     def make(name, closure) {
+        if(!name.trim()) {
+            log.debug("Setting up test case named $name")
+        }
         closure.delegate = this
         closure()
     }
@@ -29,6 +34,7 @@ class DBTestCase {
     public Object insertIntoDatabase(args, String name) {
         Map fields = getFieldMap(args)
         String insertStatement = createInsertString(fields, name)
+        log.debug("Writing to table $name with parameters {}", fields)
         def rowResult = executeTransactionToDatabase(fields, insertStatement)
         rowResult
     }

@@ -4,13 +4,18 @@ import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 
 @Slf4j
+/**
+ * This class is thread safe, if and only if the test creates a new object every time.
+ */
 class DBTestCase {
 
     final Sql connection;
-    def tableToIdMap = [:]
+    def testCaseKeyResults
+    def currentTestName
 
     DBTestCase(Sql connection){
         this.connection = connection
+        this.testCaseKeyResults = new TestCaseContainer()
     }
 
     def make(name, closure) {
@@ -19,19 +24,21 @@ class DBTestCase {
         }
         closure.delegate = this
         closure()
+        currentTestName = name
     }
 
     def make(closure) {
-        make("", closure)
+        make("DEFAULT_TEST", closure)
     }
 
-    def methodMissing(String name, args){
-        Integer rowResult = insertIntoDatabase(args, name)
-        setIdForTable(name, rowResult)
+    def methodMissing(String tableName, args){
+        Integer rowResult = insertIntoDatabase(tableName, args)
+        testCaseKeyResults.addNewPrimaryKey(currentTestName, tableName, rowResult)
+        //updatePrimaryKeyList(tableName, rowResult)
         return rowResult
     }
 
-    public Object insertIntoDatabase(args, String name) {
+    public Object insertIntoDatabase(String name, args) {
         Map fields = getFieldMap(args)
         String insertStatement = createInsertString(fields, name)
         log.debug("Writing to table $name with parameters {}", fields)
@@ -45,15 +52,6 @@ class DBTestCase {
         } catch (ex) {
             throw new InvalidDatabaseOperationException(ex)
         }
-    }
-
-    void setIdForTable(String name, def ids) {
-        def idsForName = tableToIdMap[name]
-        if(null == idsForName) {
-            idsForName = new HashSet<Integer>();
-        }
-        idsForName << ids
-        tableToIdMap[name] = idsForName
     }
 
     private GString createInsertString(fields, String name) {

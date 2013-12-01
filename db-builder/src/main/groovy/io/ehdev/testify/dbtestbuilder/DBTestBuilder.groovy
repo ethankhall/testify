@@ -16,18 +16,33 @@ class DBTestBuilder {
         this.dataSource = dataSource
     }
 
-    public Map<String, List<Integer>> processTestDatabase(String fileName) {
+    public TestCaseContainer processTestDatabase(String fileName) {
         def builder = new DBTestCase(new Sql(dataSource))
-        setupScriptToRun(fileName, builder)
-        return builder.getTableToIdMap()
+        runScript(fileName, builder)
+        return builder.getTestCaseKeyResults()
     }
 
-    public Script setupScriptToRun(String fileName, builder) {
+    public def runScript(String fileName, builder) {
         def testScript = new GroovyShell().parse(new File(fileName))
-        testScript.metaClass.DBTestCase {
-            builder.make(it)
-        }
+        setupMetaClass(testScript, builder)
         testScript.run()
-        testScript
+    }
+
+    public void setupMetaClass(Script testScript, builder) {
+        setupMetaClassWithoutName(testScript, builder)
+
+        setupMetaClassWithName(testScript, builder)
+    }
+
+    public void setupMetaClassWithName(Script testScript, builder) {
+        testScript.metaClass.DBTestCase { name, closure ->
+            builder.make(name, closure)
+        }
+    }
+
+    public void setupMetaClassWithoutName(Script testScript, builder) {
+        testScript.metaClass.DBTestCase { closure ->
+            builder.make(closure)
+        }
     }
 }

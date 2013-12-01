@@ -2,12 +2,12 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url uri("https://raw.github.com/ethankhall/mvn-repo/master")
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
 
     dependencies {
-        classpath 'io.ehdev.testify:testify-gradle:1.0.2'
+        classpath 'io.ehdev.testify:testify-gradle:1.0.+'
     }
 }
 
@@ -16,13 +16,15 @@ apply plugin: 'java'
 
 repositories {
     maven {
-        url uri("https://raw.github.com/ethankhall/mvn-repo/master")
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
     mavenCentral()
 }
 
 dependencies {
-    testCompile 'io.ehdev.testify:testify-java:1.0.2'
+    testCompile 'io.ehdev.testify:testify-java:1.0.+'
+    testCompile 'io.ehdev.testify:db-builder:1.0.4-SNAPSHOT'
+    testCompile 'org.apache.commons:commons-io:1.3.2'
 
     testCompile 'org.testng:testng:6.8.7'
     testCompile 'org.easytesting:fest-assert:1.4'

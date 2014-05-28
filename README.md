@@ -10,14 +10,12 @@ To use Testify you need to do two things. First add it to the classpath (to get 
 ```
 buildscript {
     repositories {
-        mavenCentral()
-        maven {
-            url uri("https://raw.github.com/ethankhall/mvn-repo/master")
-        }
+        jcenter()
+        maven { url "http://dl.bintray.com/ethankhall/maven" }
     }
 
     dependencies {
-        classpath 'io.ehdev.testify:testify-gradle:1.0.2'
+        classpath "io.ehdev.testify:testify-gradle:1.0.6"
     }
 }
 
@@ -30,18 +28,17 @@ Second you need to add the second project to your testCompile so that it can be 
 
 ```
 repositories {
-    maven {
-        url uri("https://raw.github.com/ethankhall/mvn-repo/master")
-    }
+    maven { url "http://dl.bintray.com/ethankhall/maven" }
+    jcenter()
     mavenCentral()
 }
 
 dependencies {
-    testCompile 'io.ehdev.testify:testify-java:1.0.2'
+    testCompile 'io.ehdev.testify:testify-java:1.0.6'
 }
 ```
 
-Again you will have to use the makeshift repo until I submit it to maven central. Now if you want to use it you can use the configure block
+This will eventually make it to mavenCentral, but it could take a while.
 
 ```
 testify {

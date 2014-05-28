@@ -22,3 +22,8 @@ subprojects {
 
     apply from: "$rootDir/publishing.gradle"
 }
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.12'
+}

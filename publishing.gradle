@@ -1,7 +1,7 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = '1.0.5-SNAPSHOT'
+version = '1.0.7-SNAPSHOT'
 group = 'io.ehdev.testify'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
@@ -12,7 +12,7 @@ signing {
 
 def sonatypeRepositoryUrl 
 if (ext.isReleaseVersion) {
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+    sonatypeRepositoryUrl = "https://api.bintray.com/maven/ethankhall/maven/testify"
 } else {
     sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 }
@@ -23,9 +23,8 @@ uploadArchives {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
             repository(url: sonatypeRepositoryUrl) {
-                authentication(userName: mavenUsername, password: mavenPassword)
+                authentication(userName: bintreeUsername, password: bintreePassword)
             }
-            //repository(url: "file://$rootDir/mvn-repo") 
 
             pom.project {
                 name 'testify'

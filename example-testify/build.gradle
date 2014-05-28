@@ -1,13 +1,12 @@
+def testifyVersion = '1.0.6'
 buildscript {
     repositories {
-        mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+        jcenter()
+        maven { url "http://dl.bintray.com/ethankhall/maven" }
     }
 
     dependencies {
-        classpath 'io.ehdev.testify:testify-gradle:1.0.+'
+        classpath "io.ehdev.testify:testify-gradle:1.0.6"
     }
 }
 
@@ -15,15 +14,14 @@ apply plugin: 'testify'
 apply plugin: 'java'
 
 repositories {
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
+    jcenter()
     mavenCentral()
+    maven { url "http://dl.bintray.com/ethankhall/maven" }
 }
 
 dependencies {
-    testCompile 'io.ehdev.testify:testify-java:1.0.+'
-    testCompile 'io.ehdev.testify:db-builder:1.0.4-SNAPSHOT'
+    testCompile "io.ehdev.testify:testify-java:$testifyVersion"
+    testCompile "io.ehdev.testify:db-builder:$testifyVersion"
     testCompile 'org.apache.commons:commons-io:1.3.2'
 
     testCompile 'org.testng:testng:6.8.7'
@@ -34,5 +32,6 @@ dependencies {
 }
 
 test {
+    dependsOn startTestify
     useTestNG()
 }

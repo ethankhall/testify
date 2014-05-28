@@ -48,4 +48,4 @@ testify {
 }
 ```
 
-If you don't specify databaseName one will be created for you automatically. The other fields are optional. In this example it would stop the batabase from being created on normal tests. This would be useful if you wanted to keep all your DB tests in another task.
+If you don't specify databaseName one will be created for you automatically. The other fields are optional. In this example it would stop the database from being created on normal tests. This would be useful if you wanted to keep all your DB tests in another task.
